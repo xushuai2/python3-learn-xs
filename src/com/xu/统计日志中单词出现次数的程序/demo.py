@@ -5,30 +5,34 @@ Created on 2019年4月23日
 
 @author: 大懒和小懒
 '''
-from functools import reduce
-from multiprocessing import Pool
-from collections import Counter
 
 
-file_name = 'D://log.txt';
-def read_inputs(file):
-    for line in file:
-        line = line.strip()
-        yield line.split()
 
-def count():
-    file = open(file_name,'rb')
-    lines = read_inputs(file)
-    c = Counter()
-    for words in lines:
-        for word in words:
-            c[word] += 1
-    return c
 
-def do_task():
-    job_list = ['D://log.txt'] * 10000
-    pool = Pool(8)
-    return reduce(lambda x, y: x+y, pool.map(count(), job_list))
+# ('阿萨德西安市', 1)
+# ('按顺序擦德西擦', 1)
+# ('德西', 1)
+# ('德西德西', 1)
 
-if __name__ == "__main__":
-    rv = do_task()
+
+
+import io
+import re
+class Counter:
+     def __init__(self, path):
+    # :param path: 文件路径
+         self.mapping = dict()
+         with io.open(path, encoding="utf-8") as f:
+          data = f.read()
+          words = [s.lower() for s in re.findall("\w+", data)]
+          for word in words:
+              self.mapping[word] = self.mapping.get(word, 0) + 1
+     def most_common(self, n):
+             assert n > 0, "n should be large than 0"
+             return sorted(self.mapping.items(), key=lambda item: item[1], reverse=True)[:n]
+     
+     
+if __name__ == '__main__':
+ most_common_5 = Counter("D://log.txt").most_common(5)
+ for item in most_common_5:
+     print(item)
